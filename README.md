@@ -63,6 +63,12 @@ To avoid Chrome's security warning dialogs on load, you can add the generated ce
 certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n "Antigravity Local Dev" -i localhost-cert.pem
 ```
 
+### Bypassing Chrome's "Not Secure" Badge
+To treat this origin as fully secure and remove the "Not Secure" badge in the URL bar:
+1. Open **`chrome://flags/#unsafely-treat-insecure-origin-as-secure`** in Chrome.
+2. Enable the flag and enter your origin (e.g., `https://localhost:8080`) in the text box.
+3. Relaunch Chrome.
+
 ---
 
 ## Repository Structure
