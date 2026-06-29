@@ -5,7 +5,7 @@ const path = require('path');
 const os = require('os');
 const PROXY_PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 const LS_LOG_PATH = path.join(os.homedir(), '.config/Antigravity/logs/language_server.log');
-const PROXY_LOG_PATH = path.join(os.homedir(), '.config/Antigravity/logs/proxy_h2.log');
+const PROXY_LOG_PATH = path.join(os.homedir(), '.config/Antigravity/logs/proxy.log');
 const KEY_FILE = path.join(__dirname, 'localhost-key.pem');
 const CERT_FILE = path.join(__dirname, 'localhost-cert.pem');
 

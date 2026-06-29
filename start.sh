@@ -93,7 +93,6 @@ echo "Cleaning up any old Antigravity or proxy processes..."
 pkill -f "resources/bin/language_server" 2>/dev/null
 pkill -f "antigravity" 2>/dev/null
 pkill -f "proxy.js" 2>/dev/null
-pkill -f "proxy_h2.js" 2>/dev/null
 pkill -f "tail -f $SCRIPT_DIR/.stdin_pipe" 2>/dev/null
 
 # Generate self-signed certificate if they don't exist
