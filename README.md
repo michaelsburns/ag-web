@@ -1,10 +1,10 @@
 # Antigravity Web UI Proxy (`ag-web`)
 
-A secure, portable HTTP/2 proxy and headless launcher designed to run the Antigravity IDE in standard web browsers. This setup enables developers to access the IDE remotely (e.g., over SSH port forwarding) or bypass Wayland/GPU errors on Linux.
+A secure, portable HTTP/2 proxy and headless launcher designed to run the Antigravity IDE in standard web browsers, enabling developers to access the IDE remotely (e.g., over SSH port forwarding).
 
 ## Features
 
-- **Headless Electron Execution**: Bypasses Wayland and GPU driver failures (such as `drmGetDevices2()` errors) on Linux by launching the Electron wrapper in headless mode.
+- **Headless Electron Execution**: Runs the Electron wrapper in headless mode, keeping the core application services running in the background for web browser access.
 - **HTTP/2 & gRPC-Web Streaming**: Built on a custom HTTP/2 Node.js server (`proxy.js`) that supports frame multiplexing and gRPC trailers (essential for the Go language server communication).
 - **Session Isolation**: Connects to the backend using dedicated connections for every stream/request, resolving Chrome connection reuse issues that stall new tabs and reloads.
 - **Client-Side Storage Mocking**: Automatically injects a bridge for `window.nativeStorage` that maps Electron native storage calls to the browser's standard `localStorage`.
