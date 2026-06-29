@@ -585,7 +585,7 @@ server.on('stream', (stream, headers) => {
   });
 });
 
-server.listen(PROXY_PORT, '0.0.0.0', () => {
+server.listen(PROXY_PORT, '127.0.0.1', () => {
   log(null, `============================================================`);
   log(null, `  Antigravity HTTP/2 Web UI Proxy running at:`);
   log(null, `  https://localhost:${PROXY_PORT}/`);
