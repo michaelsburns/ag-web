@@ -1,6 +1,6 @@
 # Antigravity Web UI Proxy (`ag-web`)
 
-A secure, portable HTTP/2 proxy and headless launcher designed to run the Antigravity IDE in standard web browsers, enabling developers to access the IDE remotely (e.g., over SSH port forwarding).
+A secure, portable HTTP/2 proxy and headless launcher designed to enable developers to access an Antigravity IDE instance running on another machine remotely over the web using standard web browsers (e.g., via SSH port forwarding).
 
 ## Features
 
