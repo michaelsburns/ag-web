@@ -100,6 +100,7 @@ pkill -f "tail -f $SCRIPT_DIR/.stdin_pipe" 2>/dev/null
 if [ ! -f "$KEY_FILE" ] || [ ! -f "$CERT_FILE" ]; then
   echo "Generating self-signed SSL certificate for localhost..."
   openssl req -x509 -newkey rsa:2048 -nodes -sha256 -subj '/CN=localhost' \
+    -addext "subjectAltName = DNS:localhost,IP:127.0.0.1" \
     -keyout "$KEY_FILE" -out "$CERT_FILE" -days 365 2>/dev/null
 fi
 
