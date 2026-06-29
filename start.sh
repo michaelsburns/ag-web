@@ -10,11 +10,35 @@ CERT_FILE="$SCRIPT_DIR/localhost-cert.pem"
 # Locate Node binary
 NODE_BIN="node"
 if ! command -v node &>/dev/null; then
-  if [ -x "$HOME/.local/share/fnm/node-versions/v20.20.2/installation/bin/node" ]; then
-    NODE_BIN="$HOME/.local/share/fnm/node-versions/v20.20.2/installation/bin/node"
-  elif [ -x "$HOME/.local/bin/fnm" ]; then
+  # Find the latest FNM node version dynamically if present
+  if [ -d "$HOME/.local/share/fnm/node-versions" ]; then
+    LATEST_FNM_NODE=$(find "$HOME/.local/share/fnm/node-versions" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -V | tail -n 1)
+    if [ -n "$LATEST_FNM_NODE" ] && [ -x "$LATEST_FNM_NODE/installation/bin/node" ]; then
+      NODE_BIN="$LATEST_FNM_NODE/installation/bin/node"
+    fi
+  fi
+  
+  if [ "$NODE_BIN" = "node" ] && [ -x "$HOME/.local/bin/fnm" ]; then
     eval "$("$HOME/.local/bin/fnm" env)"
   fi
+fi
+
+# Find Antigravity executable
+ANTIGRAVITY_BIN=""
+if [ -f "$SCRIPT_DIR/antigravity" ]; then
+  ANTIGRAVITY_BIN="$SCRIPT_DIR/antigravity"
+elif [ -n "$ANTIGRAVITY_DIR" ] && [ -f "$ANTIGRAVITY_DIR/antigravity" ]; then
+  ANTIGRAVITY_BIN="$ANTIGRAVITY_DIR/antigravity"
+elif [ -f "$HOME/Antigravity-x64/antigravity" ]; then
+  ANTIGRAVITY_BIN="$HOME/Antigravity-x64/antigravity"
+elif [ -f "$HOME/Antigravity/antigravity" ]; then
+  ANTIGRAVITY_BIN="$HOME/Antigravity/antigravity"
+fi
+
+if [ -z "$ANTIGRAVITY_BIN" ]; then
+  echo "ERROR: Could not find the 'antigravity' executable!"
+  echo "Please place the 'antigravity' executable in the script directory, $HOME/Antigravity-x64, or set ANTIGRAVITY_DIR."
+  exit 1
 fi
 
 # Check if the port is busy using Node.js
@@ -86,8 +110,8 @@ rm -f "$LOG_PATH"
 rm -f "$SCRIPT_DIR/.stdin_pipe"
 mkfifo "$SCRIPT_DIR/.stdin_pipe"
 
-echo "Starting Antigravity (Electron) in headless mode..."
-tail -f "$SCRIPT_DIR/.stdin_pipe" | ELECTRON_OZONE_PLATFORM_HINT=headless "$SCRIPT_DIR/antigravity" --remote-debugging-port=9222 >/dev/null 2>&1 &
+echo "Starting Antigravity (Electron) in headless mode using: $ANTIGRAVITY_BIN"
+tail -f "$SCRIPT_DIR/.stdin_pipe" | ELECTRON_OZONE_PLATFORM_HINT=headless "$ANTIGRAVITY_BIN" --remote-debugging-port=9222 >/dev/null 2>&1 &
 ELECTRON_PID=$!
 
 echo "Waiting for language server to initialize..."
