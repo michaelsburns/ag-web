@@ -56,19 +56,13 @@ export ANTIGRAVITY_DIR="/path/to/your/Antigravity-folder"
 ./start.sh
 ```
 
-### Trusting the Self-Signed Certificate
-To avoid Chrome's security warning dialogs on load, you can add the generated certificate directly to your system's trusted database:
+### Trusting the Self-Signed Certificate on macOS
+To avoid Chrome's security warning dialogs on load, you can add the generated certificate directly to your macOS system keychain:
 
-#### On Linux:
-```bash
-certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n "Antigravity Local Dev" -i localhost-cert.pem
-```
-
-#### On macOS (MacBook):
 1. Copy the generated `localhost-cert.pem` to your MacBook.
 2. Double-click the `.pem` file to launch **Keychain Access**.
 3. Import the certificate into the **System** keychain.
-4. Locate the imported certificate in your list, right-click (or double-click) and select **Get Info**.
+4. Locate the imported certificate in the list, right-click (or double-click) and select **Get Info**.
 5. Expand the **Trust** section, and set *When using this certificate* to **Always Trust**.
 
 ### Bypassing Chrome's "Not Secure" Badge
