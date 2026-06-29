@@ -44,6 +44,18 @@ https://localhost:8080/
 ```
 *(Accept the self-signed SSL certificate warning to proceed.)*
 
+### 4. Secure Remote Access via SSH Tunneling (Recommended)
+Since the proxy binds securely to the local loopback interface (`127.0.0.1`) on the host machine, it is not directly accessible over the public network. To access it securely from your local client (e.g., your MacBook), use an SSH tunnel:
+
+1. On your local machine, open a terminal and run the SSH port forwarding command:
+   ```bash
+   ssh -L 8080:localhost:8080 user@remote-host-ip
+   ```
+   *(This forwards port `8080` on your local machine to port `8080` on the remote machine's loopback interface).*
+
+2. Keep this SSH terminal session active.
+3. Open your browser on your local machine and navigate to `https://localhost:8080/`.
+
 ---
 
 ## Tips & Configurations
