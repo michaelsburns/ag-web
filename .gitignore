@@ -1,0 +1,6 @@
+# SSL certificates
+localhost-key.pem
+localhost-cert.pem
+
+# Named pipe
+.stdin_pipe
