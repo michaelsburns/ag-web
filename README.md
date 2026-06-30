@@ -77,12 +77,6 @@ To avoid Chrome's security warning dialogs on load, you can add the generated ce
 4. Locate the imported certificate in the list, right-click (or double-click) and select **Get Info**.
 5. Expand the **Trust** section, and set *When using this certificate* to **Always Trust**.
 
-### Bypassing Chrome's "Not Secure" Badge
-To treat this origin as fully secure and remove the "Not Secure" badge in the URL bar:
-1. Open **`chrome://flags/#unsafely-treat-insecure-origin-as-secure`** in Chrome.
-2. Enable the flag and enter your origin (e.g., `https://localhost:8080`) in the text box.
-3. Relaunch Chrome.
-
 ---
 
 ## Repository Structure
