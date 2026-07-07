@@ -128,7 +128,10 @@ const STORAGE_MOCK_SCRIPT = `
   };
 
   window.dialog = {
-    async showOpenDialog() { return null; }
+    async showOpenDialog() {
+      const path = prompt("Enter the absolute path of the folder you want to open:");
+      return path && path.trim() ? path.trim() : null;
+    }
   };
 
   window.logs = {
