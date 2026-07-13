@@ -122,6 +122,7 @@ const STORAGE_MOCK_SCRIPT = `
 
   window.electronUpdater = {
     onStateChanged(callback) { return () => {}; },
+    async getState() { return { type: "idle" }; },
     async applyUpdate() {},
     async quitAndInstall() {},
     async checkForUpdates() {}
