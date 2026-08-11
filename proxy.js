@@ -1,6 +1,7 @@
 const http2 = require('http2');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 const parseEndpoint = (arg) => {
   if (/^\d+$/.test(arg)) {
