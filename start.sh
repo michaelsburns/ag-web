@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Configuration
-PROXY_PORT=${1:-8080}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_PATH="$HOME/.config/Antigravity/logs/language_server.log"
 KEY_FILE="$SCRIPT_DIR/localhost-key.pem"
@@ -44,24 +43,54 @@ fi
 # Check if the port is busy using Node.js
 PORT_BUSY=$("$NODE_BIN" -e "
 const net = require('net');
-const server = net.createServer();
-server.once('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.log('true');
+const args = process.argv.slice(1);
+
+const parseEndpoint = (arg) => {
+  if (/^\d+$/.test(arg)) {
+    return { host: '127.0.0.1', port: parseInt(arg, 10) };
+  }
+  const parts = arg.split(':');
+  if (parts.length === 2) {
+    return { host: parts[0], port: parseInt(parts[1], 10) };
+  }
+  return null;
+};
+
+const endpoints = args.map(parseEndpoint).filter(Boolean);
+if (endpoints.length === 0) {
+  endpoints.push({ host: '127.0.0.1', port: 8080 });
+}
+
+const checkEndpoint = (ep) => new Promise((resolve) => {
+  const server = net.createServer();
+  server.once('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      resolve(ep);
+    } else {
+      resolve(null);
+    }
+  });
+  server.once('listening', () => {
+    server.close();
+    resolve(null);
+  });
+  server.listen(ep.port, ep.host);
+});
+
+Promise.all(endpoints.map(checkEndpoint)).then((results) => {
+  const busy = results.filter(Boolean);
+  if (busy.length > 0) {
+    console.log(busy.map(ep => \`\${ep.host}:\${ep.port}\`).join(', '));
+  } else {
+    console.log('false');
   }
   process.exit(0);
 });
-server.once('listening', () => {
-  server.close();
-  console.log('false');
-  process.exit(0);
-});
-server.listen($PROXY_PORT);
-")
+" "$@")
 
-if [ "$PORT_BUSY" = "true" ]; then
-  echo "ERROR: Port $PROXY_PORT is already in use by another process!"
-  echo "Please free the port or specify a different one: ./start.sh [port]"
+if [ "$PORT_BUSY" != "false" ]; then
+  echo "ERROR: The following requested endpoint(s) are already in use: $PORT_BUSY"
+  echo "Please free the port(s) or specify different ones."
   exit 1
 fi
 
@@ -157,4 +186,4 @@ for i in {1..40}; do
 done
 
 # Start the HTTP/2 proxy (which runs in the foreground and auto-detects the port)
-PORT=$PROXY_PORT "$NODE_BIN" "$SCRIPT_DIR/proxy.js"
+"$NODE_BIN" "$SCRIPT_DIR/proxy.js" "$@"
