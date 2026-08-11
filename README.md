@@ -25,10 +25,17 @@ A secure, portable HTTP/2 proxy and headless launcher designed to enable develop
 ## Installation & Usage
 
 ### 1. Run the Startup Script
-By default, the script starts on port `8080`. You can specify a different port as the first argument:
+By default, the script starts on port `8080` (binding to `127.0.0.1`). You can customize the listening endpoints by passing one or more ports or explicit `host:port` interfaces as arguments:
 
 ```bash
-./start.sh [port]
+# Start on default 127.0.0.1:8080
+./start.sh
+
+# Start on a custom port on 127.0.0.1
+./start.sh 8089
+
+# Start on multiple interfaces simultaneously
+./start.sh 127.0.0.1:8080 10.8.0.1:8080
 ```
 
 ### 2. Complete Google Authentication
