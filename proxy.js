@@ -2,6 +2,7 @@ const http2 = require('http2');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const DEBUG = process.env.DEBUG === 'true';
 
 const parseEndpoint = (arg) => {
   if (/^\d+$/.test(arg)) {
@@ -400,6 +401,7 @@ const onStream = (stream, headers) => {
 
 
   function logDiag(msg, ...args) {
+    if (!DEBUG) return;
     const elapsed = Date.now() - startTime;
     let windowInfo = '';
     if (stream.session && stream.session.state) {
