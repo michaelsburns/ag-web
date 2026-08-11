@@ -2,8 +2,31 @@ const http2 = require('http2');
 const fs = require('fs');
 const path = require('path');
 
-const os = require('os');
-const PROXY_PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+const parseEndpoint = (arg) => {
+  if (/^\d+$/.test(arg)) {
+    return { host: '127.0.0.1', port: parseInt(arg, 10) };
+  }
+  const parts = arg.split(':');
+  if (parts.length === 2) {
+    return { host: parts[0], port: parseInt(parts[1], 10) };
+  }
+  return null;
+};
+
+const defaultPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+const endpoints = [];
+
+const args = process.argv.slice(2);
+for (const arg of args) {
+  const ep = parseEndpoint(arg);
+  if (ep) {
+    endpoints.push(ep);
+  }
+}
+
+if (endpoints.length === 0) {
+  endpoints.push({ host: '127.0.0.1', port: defaultPort });
+}
 const LS_LOG_PATH = path.join(os.homedir(), '.config/Antigravity/logs/language_server.log');
 const PROXY_LOG_PATH = path.join(os.homedir(), '.config/Antigravity/logs/proxy.log');
 const KEY_FILE = path.join(__dirname, 'localhost-key.pem');
@@ -362,17 +385,12 @@ function getSharedAssetClient(port) {
   return sharedAssetClient;
 }
 
-const server = http2.createSecureServer({
-  key: fs.readFileSync(KEY_FILE),
-  cert: fs.readFileSync(CERT_FILE)
-});
-
-server.on('session', (session) => {
+const onSession = (session) => {
   const sid = session.socket ? `${session.socket.remoteAddress}:${session.socket.remotePort}` : 'Unknown';
   log(null, `[Session ${sid}] New browser HTTP/2 session established`);
-});
+};
 
-server.on('stream', (stream, headers) => {
+const onStream = (stream, headers) => {
   const sid = ++streamCounter;
   const startTime = Date.now();
   const path = headers[':path'].split('?')[0];
@@ -587,12 +605,24 @@ server.on('stream', (stream, headers) => {
     logErr(sid, '[Browser] error:', err.message);
     cleanup();
   });
-});
+}
 
-server.listen(PROXY_PORT, '127.0.0.1', () => {
-  log(null, `============================================================`);
-  log(null, `  Antigravity HTTP/2 Web UI Proxy running at:`);
-  log(null, `  https://localhost:${PROXY_PORT}/`);
-  log(null, `============================================================`);
-  getHTTPSPort(); // Initial port check
-});
+// Start a server instance for each configured endpoint
+for (const ep of endpoints) {
+  const server = http2.createSecureServer({
+    key: fs.readFileSync(KEY_FILE),
+    cert: fs.readFileSync(CERT_FILE)
+  });
+  
+  server.on('session', onSession);
+  server.on('stream', onStream);
+  
+  server.listen(ep.port, ep.host, () => {
+    log(null, `============================================================`);
+    log(null, `  Antigravity HTTP/2 Web UI Proxy running at:`);
+    log(null, `  https://${ep.host}:${ep.port}/`);
+    log(null, `============================================================`);
+  });
+}
+
+getHTTPSPort(); // Initial port check
